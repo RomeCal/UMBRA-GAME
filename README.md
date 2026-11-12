@@ -38,7 +38,3 @@ The program finds `Shaders/`, `Scenes/`, `Textures/` from the project folder or 
 * Gameplay: stamina, minimap, tips, three-star rating, best times, low-health warning, fog; text drop shadows.
 * Proof tools: screenshot key, six-direction camera, shadows-off key, GPU/CPU/wall timing, scene errors with line numbers.
 * `docs/`: the group deliverables (T2–T14, scene format, bias derivation, S1/S2 notes, demo script). Start with `docs/00_START_HERE_FOR_THE_GROUP.txt`.
-
-## Honest status
-Written and type-checked, **never run on a GPU** by the author. The loader, the level checker and the file generators were run; rendering was not.
-If something fails to compile or looks wrong, the console message plus your compiler output is all that's needed to fix it.
