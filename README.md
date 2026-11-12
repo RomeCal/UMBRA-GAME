@@ -32,7 +32,7 @@ The program finds `Shaders/`, `Scenes/`, `Textures/` from the project folder or 
 | **1 / 2 / 3** bias too small / right / too large | **Z / X** halve / double shadow-box half-size |
 | **N** box follows player · **M** texel snapping | **G** redraw shadows every frame vs only when needed · **0** shadows off |
 
-## What's new in v2
+## What's new 
 * Real asset files: 10 textures + 6 sky face files in `Textures/`, all named in the scene files (`tools/make_assets.py` regenerates them).
 * Level 3, a new level; levels verified by simulation (`python3 tools/check_levels.py Scenes/level1.txt`): both routes, shade coverage, **and the shadow box covers the whole arena** (this caught a real bug: with half-size 20 the arena edges were outside the box and burned you).
 * Gameplay: stamina, minimap, tips, three-star rating, best times, low-health warning, fog; text drop shadows.
