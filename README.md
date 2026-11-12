@@ -1,40 +1,52 @@
-# UMBRA v2 — Shadow is solid ground (Group 3)
 
-First-person survival puzzle. **The sun burns you; shade heals you.** Reach the blue light.
-"In the sun" is decided by the sun's own shadow map, sampled on the GPU at your feet (`SunProbe` + `sunprobe.frag`) — not by trigger zones.
-Three levels: **First Light** (static sun) → **Swinging Sun** (the sun swings ±12°) → **The Long Noon** (slanted sun, a gap in the shade the crates must close).
+The idea
+UMBRA is a first-person survival puzzle where shadow is the only safe ground. You’re in a sun-baked courtyard. Standing in direct sunlight drains your health and standing in shade restores it. You win by reaching the glowing blue pillar.
 
-## macOS (Terminal)
-```
-xcode-select --install            # skip if you already have the compiler
-brew install glew glfw glm        # Homebrew: https://brew.sh
-cd ~/Downloads/UMBRA_Mac
-chmod +x build_and_run.sh
-./build_and_run.sh                # level 1.   Other levels:  ./build_and_run.sh Scenes/level3.txt
-```
-macOS only supports OpenGL up to 4.1, so the program asks for 4.6, then 4.1, then 3.3 and rewrites each shader's `#version` line to match (it prints which one it got).
+The sun and shade aren’t scripted zones. Each frame, a tiny GPU pass samples the sun’s real shadow map at five points around your feet and reports how much of you is lit. That number drives your health. Anything that casts a shadow in the picture is real cover in the game. If the shadow rendering is wrong, the game is wrong, which is why the bias, shadow-box and shadows-off keys work as demos.
 
-## Windows (Visual Studio 2022 Community)
-```
-vcpkg install glew:x64-windows glfw3:x64-windows glm:x64-windows
-vcpkg integrate install
-```
-Open `UMBRA.sln`, choose **x64**, press **F5**. (VS 2019: Project → Properties → General → Platform Toolset = v142.)
-Alternative: *File → Open → Folder* on this folder (CMake, needs the vcpkg toolchain).
-The program finds `Shaders/`, `Scenes/`, `Textures/` from the project folder or from `x64/Debug` — no absolute paths.
-
-## Controls
-| | |
-|---|---|
-| **WASD** move · **mouse** look · **Shift** run (uses stamina) · **Tab** map | push the **orange blocks** to make new shade |
-| **Enter** start/continue · **R** restart · **P / Esc** pause | **T** flashlight · **V** vsync · **F12 or K** screenshot (BMP in `screenshots/`) |
-| **F1** debug panel · **F2** free camera · **F3** PCF off/3×3/5×5 | **C** (free cam) look along +X −X +Y −Y +Z −Z |
-| **1 / 2 / 3** bias too small / right / too large | **Z / X** halve / double shadow-box half-size |
-| **N** box follows player · **M** texel snapping | **G** redraw shadows every frame vs only when needed · **0** shadows off |
-
-## What's new 
-* Real asset files: 10 textures + 6 sky face files in `Textures/`, all named in the scene files (`tools/make_assets.py` regenerates them).
-* Level 3, a new level; levels verified by simulation (`python3 tools/check_levels.py Scenes/level1.txt`): both routes, shade coverage, **and the shadow box covers the whole arena** (this caught a real bug: with half-size 20 the arena edges were outside the box and burned you).
-* Gameplay: stamina, minimap, tips, three-star rating, best times, low-health warning, fog; text drop shadows.
-* Proof tools: screenshot key, six-direction camera, shadows-off key, GPU/CPU/wall timing, scene errors with line numbers.
-* `docs/`: the group deliverables (T2–T14, scene format, bias derivation, S1/S2 notes, demo script). Start with `docs/00_START_HERE_FOR_THE_GROUP.txt`.
+Moment to moment
+Health: it drains at a level-specific rate when fully lit (30/s in level 1) and regenerates at 12/s in full shade. Half-lit means a blend of the two.
+Stamina: Shift sprints at 1.7× speed and drains stamina. When it hits zero you’re TIRED until 30% is back, so you can’t sprint across the sun forever.
+Pushable blocks: the orange crates move when you walk into them. A block casts shade wherever you leave it, so you can build your own cover.
+Collision: you collide with the same object list that is drawn and shadowed.
+Feedback: a red-orange flash while you burn, a pulsing red frame when health is low, and a SUN/SHADE indicator.
+HUD: health and stamina bars (top left), level, time and distance to the goal (top right), a Tab minimap (bottom right) and wrapped tips (bottom, left of the map).
+Scoring: three stars if you finish under the level’s par time, two under 1.6× par, otherwise one. Best times are kept per level for the session.
+The three levels
+1 First Light	2 Swinging Sun	3 The Long Noon
+Sun	fixed	swings ±12° every 40 s	slanted, swings ±8° every 36 s
+Arena	42 × 28	42 × 28 (mirrored)	52 × 30
+Drain / regen	30 / 12	34 / 12	40 / 12
+Par time	60 s	55 s	75 s
+Idea	learn the mechanic	shade edges move, stay deep inside it	a gap in the shade the crates must close
+Level 1:
+Walls zig-zag up the west edge, then run east along the north.
+There’s a doorway in the north wall.
+The safe route is about 61 units long and the risky shortcut across the sand is about 47.
+Level 2: it’s level 1 mirrored, so you start east and finish west, with taller walls (9 high). Because the sun swings, the safe shade moves every few seconds.
+Level 3:
+Sandstone walls, obsidian pillars and a different floor.
+The sun leans east, so shadows slant north-east.
+The north wall has a wide lit gap, and two tall crates are meant to be pushed into it.
+In my simulation the shortcut is lethal, which is the intent.
+What you’ll see
+Lighting: one sun with a 2048² shadow map, two torches that cast cube-map shadows in all directions, and two spot lights (your flashlight on T, plus a fixed one).
+Surfaces: Phong shading (ambient, diffuse, specular). There are ten materials, from matt sand to a sharp-glinting metal pyramid and glowing ember and goal materials.
+Sky and atmosphere: the sky is a cube map from six face files, with a sun disc that follows the real light direction, plus distance haze.
+Assets: ten textures from Textures/, plus four generated shapes (box, plane, cylinder, pyramid).
+Scene files: everything (lights, health numbers, shadow box, materials, goal, tips) comes from Scenes/*.txt, so you can edit and re-run without rebuilding. A bad line prints its line number and the game keeps running.
+Controls
+Key	What it does
+WASD, mouse, Shift	move, look, sprint
+Tab / R / P or Esc	minimap / restart / pause
+T / V	flashlight / vsync
+F1	debug panel (timings, bias, box size, texel size)
+F2	free camera with no damage
+F3	shadow edge filtering: off, 3×3, 5×5
+1 / 2 / 3	bias too small (acne) / about right / too large (peter-panning)
+0	sun shadows off; the whole level becomes lethal
+Z / X	halve or double the shadow-box half-size
+N / M	box follows you / texel snapping on or off
+G	redraw shadow maps every frame vs only when something changed
+C (in free camera)	look along +X, −X, +Y, −Y, +Z, −Z for the sky seam proof
+F12 or K	screenshot to screenshots/
