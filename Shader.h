@@ -13,7 +13,7 @@ public:
     Shader();
     ~Shader();
 
-    // gs may be an empty string.  Returns false (and prints the log) on any error.
+    // gs may be an empty string.  Returns false (and prints the log) on any error
     bool CreateFromFiles(const std::string& vs, const std::string& gs, const std::string& fs);
     void UseShader() const { glUseProgram(program); }
     GLuint GetID() const { return program; }
