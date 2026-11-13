@@ -1,0 +1,36 @@
+=============================================================================
+ UMBRA v2 - WHAT IS IN docs/, AND WHAT YOU STILL HAVE TO DO YOURSELVES
+=============================================================================
+ The code in this folder was written for the group with AI assistance
+ (Claude, by Anthropic). The brief says you may use that, but you MUST declare it
+ (docs/T03_decision_log.txt has the declaration, file by file) and you MUST be able
+ to explain every file you are recorded as owning at the interview. Read your own files.
+
+ WHAT IS PRE-FILLED (checked against the real files, numbers computed by script)
+   SCENE_FORMAT_SPEC.txt        R1  D1   the scene file format
+   T02_texture_unit_ledger.txt  R2  I1   every sampler, every program, every unit
+   T03_decision_log.txt         R1  I2   16 entries with rejected alternatives + AI declaration
+   T04_file_ownership.txt       R1  I4   suggested owners (put your names in)
+   T06_asset_manifest.txt       R3  D1   bytes/dimensions of every texture (computed)
+   T07_material_table.txt       R3  D2   10 materials, vertex counts, which objects use them
+   T08_memory_budget.txt        R3  D4   bytes, not texels (computed)
+   T09_shader_change_log.txt    R2  D2   the design history of each shader, as a STARTING POINT
+   BIAS_DERIVATION.txt          R2  D3   derivation first, tuning second, with the far-plane answer
+   T10_state_machine.txt        R4  D3   table + diagram + impossible transitions, with line numbers
+   T14_prediction_sheets.txt             P1, P2, P3, E1: predictions with working (REWRITE IN YOUR OWN WORDS)
+   S1_frame_draft.txt           S1       how one frame is drawn
+   S2_notes.txt                 S2       what goes wrong in the GAME when the renderer is wrong
+   DEMO_SCRIPT.txt              Part 5   the 12-minute demo with the break-it keys
+   LEVEL_QA_REPORT.txt                   simulated route analysis of all three levels
+
+ WHAT ONLY YOU CAN DO (the marks depend on it; nobody can do these for you)
+   - run the proofs and write the MEASUREMENTS (P1 screenshots, P2 outside-the-box screenshot, P3, E1 crawl pair)
+   - T05 clean clone records (Gate 2 and before submission): a different person, a different machine
+   - T11 test matrix: three dated runs; T12 frame times on THREE machines; T13 bug log (12 entries, 3 graphics bugs)
+   - T01 weekly logs, signatures on T02/T04, peer form, the 5 minute video
+   - the report S1-S5 in your own words (S1_frame_draft and S2_notes are material, not the finished text)
+   - the T14 predictions: write them BEFORE you measure. A prediction pasted from this file and agreeing
+     perfectly with the measurement is exactly what the rubric calls suspicious.
+
+ NOTHING IN THIS FOLDER HAS BEEN MEASURED ON A GPU. The author had no GPU. Where a number below is a
+ prediction it says so.

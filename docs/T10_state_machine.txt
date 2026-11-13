@@ -1,0 +1,40 @@
+=============================================================================
+ T10 - STATE MACHINE                                                       (R4 owns)
+=============================================================================
+   FROM STATE   EVENT / CONDITION                         TO STATE      IN CODE AT
+   ------------ ----------------------------------------- ------------- ------------------------------
+   (start)      level loaded                              TITLE         Game::LoadLevel, Game.cpp:20
+   TITLE        Enter or Space                            PLAYING       Game::Update, Game.cpp:113
+   TITLE        Esc                                       (quit)        Game.cpp:114 -> main.cpp window.SetShouldClose
+   PLAYING      Esc or P                                  PAUSED        Game.cpp:128
+   PAUSED       Esc, P or Enter                           PLAYING       Game.cpp:117
+   PLAYING      health <= 0                               LOST          Game.cpp:165
+   PLAYING      feet within goalRadius of the goal        WON           Game.cpp:168 (also stars + best time)
+   LOST         Enter                                     PLAYING       Game.cpp:124 -> main.cpp -> Game::Restart (Game.cpp:30)
+   WON          Enter, another level exists               PLAYING*      Game.cpp:120 -> main.cpp BuildLevel -> LoadLevel -> TITLE of next level
+   WON          Enter, no next level                      TITLE (lvl 1) Game.cpp:120 (wantFirstLevel)
+   PAUSED/PLAYING/WON/LOST   R                            PLAYING       Game.cpp:109 (wantRestart) -> Game::Restart, blocks go back
+   WON/LOST     Esc                                       (quit)        Game.cpp:121, 125
+   (* the new level starts on its TITLE screen; Enter then begins it)
+
+   DIAGRAM
+                     Enter/Space
+          TITLE ------------------------> PLAYING <------------------------+
+            ^                              |  |  ^                         |
+            | (WON, no next level:         |  |  | Esc / P / Enter         | Enter or R
+            |  Enter -> level 1 TITLE)     |  |  |                         |
+            |                              |  |  PAUSED                    |
+            |        reach the goal        |  |                          LOST
+            +------------- WON <-----------+  +-- health <= 0 -----------> LOST
+                           |
+                           +-- Enter: next level -> its TITLE screen
+          R (every state except TITLE) restarts the same level: PLAYING, blocks back in place.
+          Esc on TITLE, WON or LOST quits.   Esc/P while PLAYING pauses.
+
+   TRANSITIONS THE DIAGRAM SAYS ARE IMPOSSIBLE (try them at the viva):
+     - TITLE -> PAUSED, TITLE -> WON, TITLE -> LOST   (no update path leaves TITLE except Enter/Space/Esc)
+     - PAUSED -> WON or LOST   (health and goal are only tested in the PLAYING case; the timer and the sun
+                                damage do not run while paused, so you cannot die while paused)
+     - WON -> LOST and LOST -> WON
+     - R on the TITLE screen does nothing (Game.cpp:109 excludes TITLE)
+   NOTE R5: line numbers are for the delivered Game.cpp; if you edit the file, update this column.

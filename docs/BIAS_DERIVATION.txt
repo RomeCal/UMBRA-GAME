@@ -1,0 +1,59 @@
+=============================================================================
+ BIAS DERIVATION                                                       (R2, deliverable D3)
+=============================================================================
+ Derivation first, tuning second. Numbers are for level 1 unless said otherwise. They are PREDICTIONS from geometry
+ until you test them with keys 1 / 2 / 3.
+
+ 1. THE TWO BIASES ARE IN DIFFERENT UNITS
+    Directional (shader.frag, CalcDirectionalShadowFactor):  compared against a value read straight out of a depth
+      texture, so it is NORMALISED DEPTH, 0..1 across the light's near..far.   far - near = 100 - 0.1 = 99.9.
+      CONVERSION:  world units = bias x 99.9      (an orthographic projection is linear in depth).
+    Omnidirectional (shader.frag, CalcOmniShadowFactor):  the stored value is distance / farPlane, and the shader
+      multiplies it back by omniFarPlane[i] BEFORE comparing, so omniBias is already in WORLD UNITS.
+
+ 2. TEXEL FOOTPRINT (what the bias has to beat)
+    Sun:   one texel covers  2 x halfSize / resolution  =  2 x 24 / 2048 = 0.0234 world units  (level 1).
+    Point: at distance d one cube-face texel covers about 2d / res  (res 1024):  d = 10 -> 0.0195;  d = 20 -> 0.0391.
+    A surface tilted by angle theta away from facing the light changes depth across ONE texel by  texel x tan(theta).
+    Nearest sampling can be wrong by that whole amount, so the bias must exceed it or the surface shadows itself (ACNE).
+
+ 3. THE SUN'S NUMBERS ON OUR FLOOR
+    sun direction (0, -0.6, 0.8)  ->  light vector L = (0, 0.6, -0.8),  floor normal N = (0,1,0),  N.L = 0.6,
+    cos(theta) = 0.6,  tan(theta) = 0.8 / 0.6 = 1.333.
+    depth variation across a texel = 0.0234 x 1.333 = 0.0313 world = 0.0313 / 99.9 = 0.000313 normalised.
+    our bias there = max(0.002 x (1 - 0.6), 0.0005) = max(0.0008, 0.0005) = 0.0008  -> 2.6x margin.
+    At a grazing surface, N.L = 0.2 (pyramid/cylinder sides): tan = 4.9 -> need 0.0234 x 4.9 / 99.9 = 0.00115;
+    we have 0.002 x 0.8 = 0.0016 -> 1.4x margin.    Level 3 (N.L = 0.55): need 0.000475, have 0.0009 -> 1.9x.
+
+ 4. WHAT THE SLOPE TERM IS FOR:  tan(theta) grows as N.L falls, and (1 - N.L) grows with it, so the bias grows
+    exactly where the footprint problem grows. A constant bias big enough for grazing surfaces would detach
+    shadows everywhere; one small enough for facing surfaces would stripe the grazing ones.
+    WHAT THE FLOOR 0.0005 PROTECTS:  when a surface faces the light, (1 - N.L) -> 0, the slope term vanishes,
+    but the comparison can still fail by (a) the 32-bit depth rounding, (b) the projected texel centre not
+    lying exactly on the surface (up to half a texel of positional error), (c) float error in the matrix.
+    0.0005 = 0.05 world units, about two texels.
+
+ 5. WHY NOT SIMPLY BIGGER (PETER-PANNING)
+    A bias b (world) delays the shadow along the light ray; on the ground that moves the shadow's start by
+    b / (component of the light direction along the ground) = b / 0.8 for our sun.
+      correct preset (key 2):  0.0008 x 99.9 = 0.080 world  -> shade starts 0.1 units late (player radius is 0.4)
+      too large preset (key 3): 0.02 x 99.9 = 2.0 world     -> shade starts 2.5 units late: a LIT strip beside every wall
+      too small preset (key 1): 0.00002 x 99.9 = 0.002 world << 0.0313 needed -> acne everywhere on the floor
+    For the GAME: acne = sunlit floor falsely shaded in stripes (damage flickers, sunlit_fraction jumps between
+    0.4 and 1.0); peter-panning = a lit strip where the picture "should" be shade (damage beside the wall).
+    The course default  0.05 x (1 - N.L)  would be 0.05 x 0.4 x 99.9 = 2.0 world on our floor: peter-panning by default.
+
+ 6. omniBias = 0.15 world units: at d = 20 the footprint is 0.039; tan(theta) up to ~4 gives 0.16.  Chosen as
+    about one grazing-angle footprint at the furthest useful range.  Torches are decoration: a wrong value costs
+    a picture, not the game.
+
+ 7. DOES THE BIAS CHANGE IF THE FAR PLANE DOUBLES?  (Activity I G6)
+    Directional: YES. The bias is in normalised depth; doubling far (100 -> 200) doubles (far - near), so the SAME
+      number now means twice as many world units.  To keep the same world tolerance, halve the normalised bias.
+      (The texel footprint in world units does not change, so the needed world bias does not change.)
+    Omnidirectional: the bias is in world units, so it does NOT need to change.  BUT the far plane appears in TWO places
+      that must agree: omni_shadow_map.frag divides by `farPlane`, shader.frag multiplies by `omniFarPlane[i]`
+      (both set from PointLight::farPlane), and the projection's far clip (PointLight::CalcLightTransforms).
+      If the two scale factors differed, every distance would be wrong by their ratio. Also a very large far plane
+      costs depth precision.
+ 8. TUNE BY EYE AFTERWARDS: then add entries to T09 saying what you changed and why, INCLUDING values you reverted.

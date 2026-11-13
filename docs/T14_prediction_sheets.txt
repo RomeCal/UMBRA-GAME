@@ -1,0 +1,52 @@
+=============================================================================
+ T14 - PREDICTION SHEETS  (STARTING DRAFTS - rewrite in YOUR words and date them BEFORE you measure)
+=============================================================================
+ The reasoning below is real arithmetic from the geometry, but these are the AUTHOR'S predictions. If you paste them
+ and they agree perfectly with your measurements, the rubric treats that as suspicious. Make your own, disagree where
+ you disagree, and write the correction when you are wrong.
+
+ P1 - BIAS STUDY  (keys 1, 2, 3; scene level 1)
+   PREDICTION      written on ______
+     Key 1 (scale 0, min 0.00002 = 0.002 world): ACNE. Depth varies by 0.0313 world across a texel on the floor
+       (0.0234 x tan 53 deg), 15x the bias, so a stripe pattern covers every sunlit floor face, aligned with the texel grid.
+       GAME EFFECT: sunlit ground is falsely shaded in stripes, so sunlit_fraction flickers between about 0.4 and 1.0
+       while standing still: health drains slower and unevenly in the sun. (Not safe, but not reliably lethal.)
+     Key 2 (0.0008 normalised = 0.080 world): clean. Shade starts 0.1 units late, under the 0.4 player radius.
+     Key 3 (min 0.02 = 2.0 world): PETER-PANNING. Shade starts 2.5 units away from every wall base (2.0 / 0.8).
+       GAME EFFECT: a lit strip 2.5 wide beside each wall that LOOKS like it should be safe - the safe route takes damage.
+     What would make me wrong: the sun elevation (shadows could be too short to show a gap), texture noise hiding stripes.
+   MEASUREMENT     taken on ______      what happened:        right? fully / partly / no       correction:
+
+ P2 - THE SHADOW BOX
+   PREDICTION      written on ______
+     Bounds: left -h, right +h, bottom -h, top +h, near 0.1, far 100 (DirectionalLight.cpp builds
+     glm::ortho(-h, h, -h, h, near, far)).  With the course's h = 20 the volume is 40 x 40 x 99.9 = 159,840 cubic units;
+     our level 1 uses h = 24 so 48 x 48 x 99.9 = 230,169.6.
+     WHERE IS OUTSIDE: light space x = -world x for our sun, so |x| > h is outside (press Z twice: h = 6, the box then
+     covers only x in -6..6).  GAME EFFECT: outside the box the lookup hits the border value 1.0 = nothing in the way = lit.
+     So standing in a shaded place beyond the box edge you burn.  Screenshot: HUD says OUTSIDE SHADOW BOX and shows SUN.
+     WHY A DIRECTIONAL LIGHT NEEDS A BOX WITH NO POSITION: a shadow map is a finite texture; the rays are parallel, so
+     "where the camera looks from" is arbitrary but the AREA those rays are captured over must be chosen. Resolution
+     is spread over that area (texels per world unit = res / (2h)); a box too large wastes it, too small leaves holes.
+     Ortho (not perspective) because the rays are parallel - same reason the HUD uses ortho.
+   MEASUREMENT     taken on ______      what happened:        right?         correction:
+
+ P3 - DOUBLE THE HALF-SIZE (24 -> 48, nothing else changed)
+   PREDICTION      written on ______
+     texel size 2 x 24 / 2048 = 0.0234  ->  2 x 48 / 2048 = 0.0469 world units (x2). (Spec example: 0.0195 -> 0.0391.)
+     Shadow edges get twice as stair-stepped (steps of 0.047 units, a tenth of the player's 0.4 radius).
+     Second effect: acne threshold doubles too - at N.L = 0.2 we now need 0.0469 x 4.9 / 99.9 = 0.0023 normalised
+     but the bias is 0.0016: expect new acne on the pyramid and cylinder sides, but not on the floor (0.00063 needed vs 0.0008).
+     GAME EFFECT: the lethal boundary moves by up to one texel (0.047 units = about 0.7 of a frame's walking,
+     4.5 u/s x 16.7 ms = 0.075), so you will not notice it at the boundary; the stripes on grazing surfaces you can.
+   MEASUREMENT     taken on ______      what happened:        right?         correction:
+
+ E1 - BOX THAT FOLLOWS THE PLAYER (N), THEN TEXEL SNAPPING (M)
+   PREDICTION      written on ______
+     press Z twice (h = 6) so texels are 0.0059 units, press N to follow. Without snapping the box centre moves by
+     up to 4.5 x 0.0167 = 0.075 units per frame = 12.8 texels, so every shadow edge re-quantises each frame: visible
+     shimmer along every edge while walking (not while standing still). With snapping the centre only moves in whole
+     texels (0.0059), the texel grid stays fixed in the world, and the shimmer vanishes (edges only step by whole texels
+     when the box moves, which is invisible because they land on the same grid positions).
+     COST: none measurable (one rounding per frame) but the shadow map is redrawn EVERY frame while following (dirty flag set).
+   MEASUREMENT     taken on ______      screenshot pair (crawl / gone):        right?         correction:

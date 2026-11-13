@@ -1,0 +1,20 @@
+=============================================================================
+ S2 - THE MECHANIC AND THE MATHS (notes; the proofs themselves are in T14 + your measurements)
+=============================================================================
+ The part of the renderer UMBRA depends on: the directional shadow map and the test against it.
+ Everything the player does about health goes through one function: the lit fraction from sunprobe.frag, which is
+ the same comparison as shader.frag:   light-space depth of the point  -  bias  >  stored depth  =>  in shadow.
+
+ WHAT GOES WRONG IN THE GAME WHEN EACH PART IS WRONG
+   bias too small           acne: sunlit ground falsely shaded in stripes -> sunlit fraction flickers -> damage flickers
+                            while standing still; players stand in "safe" stripes that are not shade.
+   bias too large           peter-panning: a lit strip beside every wall -> damage in a place that looks like solid shade.
+   box too small / off      outside the box = lit: edges of the level burn you for no visible reason.
+   box too large            texel size grows (2h/res): shade edges blur by up to one texel, acne threshold rises.
+   box follows w/o snapping every shadow edge re-quantises each frame: the safe/lethal boundary shimmers by one texel.
+   shadows off (key 0)      nothing blocks the sun: the level is unwinnable (proof the shadows are not decoration).
+   wrong matrix/near/far    shadows land in the wrong place; the game and the picture agree with each other but not with the level.
+   no texel snapping + follow  see above.
+   sun probe a frame late   (documented decision) the damage lags the picture by ~16 ms: invisible, and it is the same lag for everyone.
+ COMPARISON WITH ANOTHER GROUP (S2 asks which other game depends on the hardest part of the renderer): read 07_ALL_FIVE_GAMES
+ and decide yourselves - this file does not choose for you.

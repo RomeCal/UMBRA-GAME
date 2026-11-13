@@ -1,0 +1,25 @@
+=============================================================================
+ T13 - BUG LOG                                                             (R5 owns)
+=============================================================================
+ Minimum 12 entries, at least 3 graphics bugs; an entry without numbered reproduction steps scores nothing.
+ Two REAL entries found while the code was being written (logged here so the group sees what a good entry looks like;
+ your other ten must come from running it).
+
+ #  DATE   WHAT I SAW
+    1.  tools/check_levels.py said "SAFE 50.9 units, RISKY 50.9 units" for level 1: no short/long choice (logic bug)
+    HOW TO REPRODUCE
+      1. git checkout the first layout of Scenes/level1.txt (walls -7/0/8 as long as 30 units)
+      2. python3 tools/check_levels.py Scenes/level1.txt
+      3. compare the two printed lengths
+    WHAT IT ACTUALLY WAS  the north wall had no door and the west wall chain sat on the diagonal, so the shortest path
+                          WAS the shaded one.      FIXED BY  R4 (door at x 4..7, chain moved)   ON DATE ______
+ ---------------------------------------------------------------------
+    2.  Spawning inside the shadow box edge: the player burns at the start for no visible reason (graphics -> gameplay)
+    HOW TO REPRODUCE
+      1. set the first number of sun_shadow in level1.txt to 20
+      2. python3 tools/check_levels.py Scenes/level1.txt   -> "TOO SMALL, reach 22.0"
+      3. in game: walk to x = -20.5 on level 1: SUN indicator, OUTSIDE SHADOW BOX warning, health falling in a shaded place
+    WHAT IT ACTUALLY WAS  outside the orthographic box the depth lookup hits the border colour (1.0) = "lit"; the box
+                          did not cover the arena corners.      FIXED BY  half-size 24/27/32 + coverage check   ON DATE ______
+ ---------------------------------------------------------------------
+ (entries 3-12: yours)

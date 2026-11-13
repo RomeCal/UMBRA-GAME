@@ -1,0 +1,27 @@
+=============================================================================
+ T12 - FRAME TIME TABLE                                                    (R5 owns)
+=============================================================================
+ HOW: run the program, press V (vsync OFF), press F1, play 10 s; the console prints a line every 300 frames:
+   [300-frame average] wall X ms | GPU Y ms | CPU submit Z ms | ...
+ "GPU" is 0 on macOS (no timer queries); use wall time there (vsync off).  Press G to switch shadow redraw policy.
+
+   MACHINE   GPU                   CPU          RAM     OS
+   A
+   B
+   C
+
+   SCENE              A (ms)   B (ms)   C (ms)   NOTES
+   title screen
+   typical play (dirty flags ON, press G off)
+   worst case (G on: every shadow map every frame)
+
+   ONE VARIABLE CHANGED: edit the last number of each `point` line in the scene (cube resolution) - try 512 / 1024 / 2048.
+   VALUE        A (ms)   B (ms)   C (ms)
+
+ ARITHMETIC TO CHECK YOUR NUMBERS AGAINST (computed, not measured)
+   visible pixels at 1280x720: 921,600
+   shadow depth samples written per frame when every map is redrawn: 2048^2 + 2 x 6 x 1024^2 = 16,777,216
+     = 18.2 x the visible pixel count      (brief: three lights = about 25x; we have two)
+   the scene is rasterised about (2 + 6N) times for N omni lights = 14 times at N = 2, from N + 2 = 4 DRAW passes (not 6N + 2).
+   Dirty-flag saving: in steady play the shadow passes cost 0 draw passes instead of 4 (a crate push re-draws once).
+ THE ACCOUNT OF WHERE THE TIME GOES goes here: write it from your numbers.

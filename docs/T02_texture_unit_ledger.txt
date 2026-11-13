@@ -1,0 +1,38 @@
+=============================================================================
+ T2 - TEXTURE UNIT LEDGER                                   (R2 adds rows, all five sign)
+=============================================================================
+   PROGRAM     SAMPLER NAME            TYPE         UNIT        ADDED BY / FILE
+   ----------- ----------------------- ------------ ----------- -----------------------------
+   main        theTexture              sampler2D    1           inherited layout; main.cpp SetInt("theTexture", UNIT_DIFFUSE)
+   main        directionalShadowMap    sampler2D    2           main.cpp SetInt(..., UNIT_DIR_SHADOW)
+   main        omniShadowMaps[0]       samplerCube  3           Shader::SetPointLights(lights, UNIT_OMNI_FIRST)
+   main        omniShadowMaps[1]       samplerCube  4           (same call)
+   main        omniShadowMaps[2]       samplerCube  5           (same call: assigned even when fewer than 3 lights)
+   skybox      skybox                  samplerCube  0 (default) never assigned; Skybox::Draw binds GL_TEXTURE0 + UNIT_SKY
+   hud         hudTex                  sampler2D    1           HUD::End SetInt("hudTex", UNIT_DIFFUSE)   (R4)
+   sunprobe    directionalShadowMap    sampler2D    2           SunProbe::Query                           (R4/R2)
+
+ UNITS ACTUALLY IN USE with this scene (2 point lights, 2 spot lights): 1, 2, 3, 4 (main) + 0 (sky).
+ Unit 5 is assigned but idle (third point light slot).  Reserved range: 0..5.
+
+ HOW THIS DIFFERS FROM THE INHERITED LEDGER, AND WHY (write this in the report)
+   The inherited layout had omniShadowMaps[6] on units 3..8 because SPOT lights also had cube shadow maps
+   (point lights from unit 3, spot lights from 3 + pointLightCount).  UMBRA's spot lights are not shadowed
+   (decision #4), so the array is MAX_POINT_LIGHTS = 3 long, units 3..5.  The shader indexes it only with constant
+   indices (SampleOmni in shader.frag), so it does not depend on dynamic sampler-array indexing.
+
+ WHY UNIT 0 STAYS CLEAR OF sampler2D (the precise reason - say it this way)
+   A texture unit has a separate binding point per target, so a cube map on unit 0 does not by itself stop a
+   2D texture living there.  The real reason is that any samplerCube in the MAIN program that is never assigned
+   keeps the default value 0.  In this build main.cpp assigns all three omniShadowMaps every frame, so none
+   is left on 0 - but a future change that leaves one unassigned would put a samplerCube on unit 0, and if
+   theTexture (a sampler2D) were also on unit 0 the program would have two different sampler types on one
+   unit.  That fails glValidateProgram ("samplers of different types point to the same texture unit"), which is
+   the GL rule from Activity I Part F3.  Keeping theTexture on 1 removes the possibility.
+
+ WHAT IS EVER BOUND TO UNIT 0: only the sky cube map, in Skybox::Draw, during step 6 of the frame.
+ Nothing else is bound there at any time.  (Screenshot, probe and HUD code never use unit 0.)
+
+ SIGNED, all five members, with the date of the last change:
+   R1 ________________  R2 ________________  R3 ________________
+   R4 ________________  R5 ________________        date __________

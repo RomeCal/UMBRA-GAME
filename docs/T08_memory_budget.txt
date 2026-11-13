@@ -1,0 +1,29 @@
+=============================================================================
+ T8 - MEMORY BUDGET (BYTES, level 1; levels 2-3 differ only in a larger sun-map choice if you edit the file) (R3)
+=============================================================================
+   WHAT                     W     H     BYTES/TEXEL   COUNT  MIPS   BYTES
+   ------------------------ ----- ----- ------------- ------ ------ ------------
+   brick.tga                  256   256  4 (RGBA8)     1      x1.33       348,651
+   crate.tga                  256   256  4 (RGBA8)     1      x1.33       348,651
+   dune.tga                   256   256  4 (RGBA8)     1      x1.33       348,651
+   goal.tga                    64    64  4 (RGBA8)     1      x1.33        21,790
+   lava.tga                   128   128  4 (RGBA8)     1      x1.33        87,162
+   metal.tga                  256   256  4 (RGBA8)     1      x1.33       348,651
+   obsidian.tga               256   256  4 (RGBA8)     1      x1.33       348,651
+   sand.tga                   256   256  4 (RGBA8)     1      x1.33       348,651
+   sandstone.tga              256   256  4 (RGBA8)     1      x1.33       348,651
+   stone.tga                  256   256  4 (RGBA8)     1      x1.33       348,651
+   (colour textures are uploaded as RGBA8 = 4 bytes/texel by Texture::Upload, mips generated: x1.33)
+   textures subtotal                                                     2,898,165
+   sky cube map (files/gen)   256   256  4 (RGBA8)     x 6    none      1,572,864     (Skybox does not build mips)
+   directional shadow map    2048  2048  4 (D32F)      x 1    none     16,777,216     = 16 MiB
+   omni shadow maps          1024  1024  4 (D32F)      x 6 x2 none     50,331,648     = 48 MiB (24 MiB per light)
+   (small: HUD glyph strip, 1x1 probe target, 2 PBOs, meshes: under 100 KB together)
+   ------------------------ ----- ----- ------------- ------ ------ ------------
+   TOTAL                                                                71,579,893  = 68.3 MiB
+
+   Shadow maps alone: 64 MiB.   Art (textures + sky): 4.3 MiB.
+   SO: the shadow maps cost 15x the art.   (the brief's own check: three lights + sun = 88 MiB; with two lights it is 64 MiB.)
+
+   Video memory on the demo machine:   __________      Our total as a percentage of it:   __________
+   (R3: look it up - e.g. 2 GB integrated -> 3.3%,  4 GB -> 1.7%,  8 GB -> 0.8%.  These are arithmetic, not measurements.)
