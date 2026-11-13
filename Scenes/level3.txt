@@ -1,0 +1,94 @@
+# =============================================================================
+# UMBRA level 3  -  "THE LONG NOON"   (slanted sun, a gap in the north shade that the crates must close)
+# Edit any number here and just run again - nothing needs rebuilding.  Format: docs/SCENE_FORMAT_SPEC.txt
+# =============================================================================
+level_name THE LONG NOON
+
+hint THE SUN HAS MOVED - SHADOWS NOW LEAN TO THE EAST
+hint A GAP IN THE NORTH SHADE: CRATES CAST SHADE TOO
+hint PUSH A CRATE INTO THE GAP, THEN WALK ON IN ITS SHADOW
+
+bounds -26 -15 26 15
+player -24 -12 30          # x z cameraYawDegrees (0 = looking along +X, 90 = along +Z)
+goal 24 12 1.6             # x z radius
+health 100 40 12           # max, drain per second in full sun, regen per second in full shade
+stamina 100 45 20          # max, drain per second sprinting, regen per second
+speed 4.5 1.7              # walk speed (units/s), sprint multiplier
+eye_height 1.7
+player_radius 0.4
+par_time 75                # seconds for three stars
+fog 0.92 0.80 0.60 0.009   # r g b density (0 = off)
+
+# --- the sun: direction, colour, ambient, diffuse -----------------------------
+sun 0.35 -0.55 0.76   1.0 0.9 0.72   0.26 1.0
+# halfSize near far resolution biasScale biasMin   (P1 bias study, P3 half-size test: edit here)
+# NOTE: the arena is 42 wide, so 20 is too small (tools/check_levels.py proves it: the edges fall outside the box and burn you)
+sun_shadow 32 0.1 100 2048 0.002 0.0005
+sun_center 0 0 0
+sun_sweep 8 36             # amplitudeDegrees periodSeconds (0 = the sun does not move)
+sun_follow off 4 on        # E1: on|off, distance ahead of the player, snap to texels on|off
+omni_bias 0.15             # world units, for point-light shadows
+
+# --- point lights (cast shadows in all directions): x y z  r g b  amb diff  con lin exp  far res
+point -22 3 -9    1.0 0.55 0.2   0 2.0   1.0 0.09 0.032   30 1024
+point  22 3.5 10  0.3 0.55 1.0   0 2.2   1.0 0.09 0.032   30 1024
+
+# --- spot lights: x y z  dx dy dz  r g b  amb diff  con lin exp  edgeDeg [camera]
+spot 0 0 0   0 0 -1    1.0 1.0 0.9   0 2.0   1.0 0.07 0.017   18 camera
+spot -2 12 -2   0 -1 0.1   1.0 0.85 0.5   0 3.0   1.0 0.03 0.004   22
+
+# --- the sky: six face files, order +X -X +Y -Y +Z -Z (a missing file falls back to a generated sky) ---
+skybox Textures/sky_px.tga Textures/sky_nx.tga Textures/sky_py.tga Textures/sky_ny.tga Textures/sky_pz.tga Textures/sky_nz.tga
+
+# --- textures: name file path | name procedural type r g b r g b size  (types: plain checker brick stripes noise stone grid)
+texture sandTex      file Textures/sand.tga
+texture brickTex     file Textures/brick.tga
+texture stoneTex     file Textures/stone.tga
+texture crateTex     file Textures/crate.tga
+texture metalTex     file Textures/metal.tga
+texture goalTex      file Textures/goal.tga
+texture sandstoneTex file Textures/sandstone.tga
+texture obsidianTex  file Textures/obsidian.tga
+texture duneTex      file Textures/dune.tga
+texture lavaTex      file Textures/lava.tga
+
+# --- materials: name texture specularIntensity shininess [emissive r g b] ---
+material sand      sandTex      0.05 4
+material brick     brickTex     0.20 16
+material stone     stoneTex     0.45 48
+material crate     crateTex     0.15 8
+material metal     metalTex     1.00 256
+material goal      goalTex      1.00 128 emissive 0.10 0.30 0.70
+material sandstone sandstoneTex 0.10 8
+material obsidian  obsidianTex  0.90 128
+material dune      duneTex      0.03 4
+material ember     lavaTex      0.30 16  emissive 0.55 0.20 0.04
+
+# --- objects: shape material  x y z  sx sy sz  [solid movable nocast tile=N|A,B] -
+object plane dune   0 0 0   52 1 30   tile=13,7.5
+
+# walls of sandstone (8 tall).  The sun leans east here, so each shadow slants north-east.
+object box sandstone -21 4 -13   10 8 0.6  solid
+object box sandstone -15 4  -6   10 8 0.6  solid
+object box sandstone -19 4   1   12 8 0.6  solid
+object box sandstone  -8 4   8   20 8 0.6  solid
+# ...the east half of the north wall starts far away: the lit gap between the two is the puzzle
+object box sandstone  20 4   8   12 8 0.6  solid
+
+# obsidian pillars: narrow strips of shade in the middle of the sand
+object cylinder obsidian  0 4 -9    1.6 8 1.6  solid
+object cylinder obsidian 10 4 -4    1.6 8 1.6  solid
+
+# two tall crates (6 high): push them north into the gap and their shadows join the two walls' shade
+object box crate  -2 3 -4   3 6 3  movable tile=1
+object box crate   6 3  0   3 6 3  movable tile=1
+
+# decoration
+object pyramid metal   15 1.5 -11   3 3 3  solid
+object pyramid metal  -23 1.5  11   3 3 3  solid
+object cylinder ember  -22 0.6 -9    1.0 1.2 1.0   nocast
+object cylinder ember   22 0.6 10    1.0 1.2 1.0   nocast
+
+# the goal
+object cylinder goal 24 1 12   1 2 1   nocast
+object cylinder goal 24 7 12   0.3 12 0.3  nocast

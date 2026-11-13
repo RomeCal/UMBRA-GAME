@@ -1,0 +1,93 @@
+# =============================================================================
+# UMBRA level 2  -  "SWINGING SUN"     (level 1 mirrored, taller walls, the sun swings +-10 degrees every 40 s)
+# Edit any number here and just run again - nothing needs rebuilding.  Format: docs/SCENE_FORMAT_SPEC.txt
+# =============================================================================
+level_name SWINGING SUN
+next_level Scenes/level3.txt
+
+hint THE SUN SWINGS - THE EDGES OF THE SHADE MOVE WITH IT
+hint STAY DEEP INSIDE THE SHADE, NOT ON ITS EDGE
+hint EVERY TEN SECONDS THE SHADE SHIFTS - PLAN YOUR NEXT STEP
+
+bounds -21 -14 21 14
+player 20 -10 150          # x z cameraYawDegrees (0 = looking along +X, 90 = along +Z)
+goal -19 12 1.6             # x z radius
+health 100 34 12           # max, drain per second in full sun, regen per second in full shade
+stamina 100 40 22          # max, drain per second sprinting, regen per second
+speed 4.5 1.7              # walk speed (units/s), sprint multiplier
+eye_height 1.7
+player_radius 0.4
+par_time 55                # seconds for three stars
+fog 0.86 0.78 0.62 0.006   # r g b density (0 = off)
+
+# --- the sun: direction, colour, ambient, diffuse -----------------------------
+sun 0.0 -0.6 0.8   1.0 0.93 0.78   0.28 1.0
+# halfSize near far resolution biasScale biasMin   (P1 bias study, P3 half-size test: edit here)
+# NOTE: the arena is 42 wide, so 20 is too small (tools/check_levels.py proves it: the edges fall outside the box and burn you)
+sun_shadow 27 0.1 100 2048 0.002 0.0005
+sun_center 0 0 0
+sun_sweep 12 40             # amplitudeDegrees periodSeconds (0 = the sun does not move)
+sun_follow off 4 on        # E1: on|off, distance ahead of the player, snap to texels on|off
+omni_bias 0.15             # world units, for point-light shadows
+
+# --- point lights (cast shadows in all directions): x y z  r g b  amb diff  con lin exp  far res
+point 18 3 -9    1.0 0.6 0.25   0 2.0   1.0 0.09 0.032   30 1024
+point -19 3.5 10  0.3 0.55 1.0   0 2.2   1.0 0.09 0.032   30 1024
+
+# --- spot lights: x y z  dx dy dz  r g b  amb diff  con lin exp  edgeDeg [camera]
+spot 0 0 0   0 0 -1    1.0 1.0 0.9   0 2.0   1.0 0.07 0.017   18 camera
+spot 2 12 -2   0 -1 0.1   1.0 0.85 0.5   0 3.0   1.0 0.03 0.004   22
+
+# --- the sky: six face files, order +X -X +Y -Y +Z -Z (a missing file falls back to a generated sky) ---
+skybox Textures/sky_px.tga Textures/sky_nx.tga Textures/sky_py.tga Textures/sky_ny.tga Textures/sky_pz.tga Textures/sky_nz.tga
+
+# --- textures: name file path | name procedural type r g b r g b size  (types: plain checker brick stripes noise stone grid)
+texture sandTex      file Textures/sand.tga
+texture brickTex     file Textures/brick.tga
+texture stoneTex     file Textures/stone.tga
+texture crateTex     file Textures/crate.tga
+texture metalTex     file Textures/metal.tga
+texture goalTex      file Textures/goal.tga
+texture sandstoneTex file Textures/sandstone.tga
+texture obsidianTex  file Textures/obsidian.tga
+texture duneTex      file Textures/dune.tga
+texture lavaTex      file Textures/lava.tga
+
+# --- materials: name texture specularIntensity shininess [emissive r g b] ---
+material sand      sandTex      0.05 4
+material brick     brickTex     0.20 16
+material stone     stoneTex     0.45 48
+material crate     crateTex     0.15 8
+material metal     metalTex     1.00 256
+material goal      goalTex      1.00 128 emissive 0.10 0.30 0.70
+material sandstone sandstoneTex 0.10 8
+material obsidian  obsidianTex  0.90 128
+material dune      duneTex      0.03 4
+material ember     lavaTex      0.30 16  emissive 0.55 0.20 0.04
+
+# --- objects: shape material  x y z  sx sy sz  [solid movable nocast tile=N|A,B] -
+object plane sand   0 0 0   44 1 30   tile=11,7.5
+
+# the long shade walls (8 tall -> shadows 10.7 long, falling towards +Z).  They zig-zag up the west edge, then run east along the north.
+object box brick  17   4 -14   10 9 0.6  solid
+object box brick  11.5 4  -7   11 9 0.6  solid
+object box brick  15   4.5 0   12 9 0.6  solid
+object box brick   5   4.5 8   18 9 0.6  solid
+# ...and a doorway in the north wall (x 4 to 7): the short way through, across open sun
+object box brick   -14.5 4.5 8   15 9 0.6  solid
+
+# pillars: thin strips of shade in the open - resting places on the short route
+object cylinder stone 3 4.5 -2    1.6 9 1.6  solid
+object cylinder stone  -4 4.5 2    1.6 9 1.6  solid
+
+# blocks you can push to build your own shade
+object box crate   0 2.0 -7    3 4 3  movable tile=1
+object box crate   -9 2.0 -1    3 4 3  movable tile=1
+
+# decoration that still casts shade
+object pyramid metal -13 1.5 -9    3 3 3  solid
+object pyramid metal 18 1.5 11   3 3 3  solid
+
+# the goal: a glowing pillar (no shadow of its own)
+object cylinder goal -19 1 12   1 2 1   nocast
+object cylinder goal -19 7 12   0.3 12 0.3  nocast
