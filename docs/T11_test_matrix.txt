@@ -1,0 +1,33 @@
+=============================================================================
+ T11 - TEST MATRIX                                                         (R5 owns)
+=============================================================================
+ Run in full at Gate 4, Gate 6 and before submission; keep all three dated copies. GOT / P-F / DATE are YOURS to
+ fill. "All pass at Gate 4" is a matrix nobody ran. Expected results below come from reading the code, not from a run.
+
+ ID   REQUIREMENT                  WHAT TO DO                                         EXPECTED                                    GOT  P/F  DATE
+ ---- ---------------------------- -------------------------------------------------- ------------------------------------------- ---- ---- ----
+ B1   GL 4.6 / #version            start; read the first console line                 "OpenGL 4.6 ..." (macOS: 4.1; all shaders
+                                                                                       on the same #version)
+ B2   indexed draws                grep glDrawArrays in *.cpp                         no match (sun probe uses glDrawElements)
+ B3   resize                       drag the window to a very wide shape               picture not stretched; HUD still readable
+ B4   deltaTime movement           V off, walk 10 s, then V on, walk 10 s             same distance covered both times
+ B5   five materials               F2, look at pyramid, brick, stone, crate, sand     five visibly different surfaces
+ B6   Phong + moving eye           walk around the metal pyramid                      highlight slides across it as you move
+ B7   sun shadow                  look at any wall in the sun                        sharp shadow on the sand, no striping
+ B8   two point lights, shadows    stand near the orange torch, push a crate          the crate casts a shadow in all directions
+ B9   spot light                   press T; look at a wall at night-shade             visible circular cone with soft edge
+ B10  skybox                       F2, C key six times                                six views; horizon continuous; no seams
+ B11  scene from file              edit sun colour/health in level1.txt, rerun        change visible with NO rebuild
+ B12  HUD, orthographic            resize the window                                  bars stay the same pixel size, crisp
+ B13  win / lose / restart         reach the goal; stand in sun until dead; press R   WIN screen; BURNED screen; restart without quitting
+ B14  runs on a fresh machine      T05 clean clone record                             builds and runs
+ M1   health drains in sun/regens  stand in shade 10 s, then sun 3 s                  bar rises (~+12/s) then falls (~-30/s)
+ M2   shadows are the terrain      press 0 (shadows off)                              you burn everywhere, game unwinnable
+ M3   two routes short/risky/long  play both on level 1                               short = damage; long = near full health
+ M4   movable geometry             push an orange block into the sun                  a new patch of shade appears behind it
+ M5   bias study (P1)              keys 1 / 2 / 3, screenshot each                    acne / correct / peter-panning
+ M6   box outside (P2)             Z until the level pokes out of the box             OUTSIDE SHADOW BOX warning, burn there
+ M7   half-size (P3)               edit sun_shadow first number, or Z / X             texel size doubles, edges coarser
+ M8   extension (E1)               N, walk, M off then on                             crawl with snapping off; stable with it on
+ M9   bad scene file               put "object box brick abc" in a scene              message with line number, game still runs
+ M10  missing texture              rename Textures/brick.tga                          magenta/black checker + message, no crash

@@ -1,0 +1,33 @@
+=============================================================================
+ T4 - FILE OWNERSHIP                                                         (R1 keeps it)
+=============================================================================
+ Suggested owners follow ROLE_SPECIFICATIONS.  Put the member's NAME next to each role before Gate 1 closes.
+   R1 ______________  R2 ______________  R3 ______________  R4 ______________  R5 ______________
+
+   FILE                                     OWNER   MAY BE EDITED BY
+   ---------------------------------------- ------- --------------------------------------------
+   main.cpp                                 R1      R1 only; R5 sends changes to the timing-harness block, R1 commits
+   CommonValues.h                           R1      R1 only
+   Window.cpp / Window.h                    R1      R1 only (R4 sends key-handling changes to R1)
+   SceneLoader.cpp / .h                     R1      R1 only
+   UMBRA.sln / UMBRA.vcxproj / CMakeLists.txt / build_and_run.sh     R1   R1 only
+   Scenes/*.txt (format)                    R1      R1; R3 edits texture/material lines; R4 edits health/speed/hint lines
+   Shaders/*  (every .vert .frag .geom)     R2      R2 only (R4 asks R2 for sunprobe.frag changes)
+   Shader.cpp / .h                          R2      R2 only
+   ShadowMap.*, OmniShadowMap.*             R2      R2 only
+   Light.h, DirectionalLight.*, PointLight.*, SpotLight.h     R2      R2 only
+   Mesh.cpp / .h                            R3      R3 only
+   Texture.cpp / .h, Material.cpp / .h      R3      R3 only
+   Skybox.cpp / .h                          R3      R3 only
+   Textures/*.tga, tools/make_assets.py     R3      R3 only
+   Camera.cpp / .h                          R4      R4 only
+   Game.cpp / .h                            R4      R4 only
+   HUD.cpp / .h                             R4      R4 only
+   SunProbe.cpp / .h                        R4      R4 (shader side is R2's sunprobe.frag)
+   tools/check_levels.py                    R4      R4 and R5
+   docs/T11, T12, T13, report               R5      R5 assembles; each report section is signed by its author
+
+   MERGE CONFLICTS THAT COST MORE THAN TEN MINUTES
+   DATE      FILES                  WHO       WHAT WE CHANGED AFTERWARDS
+   --------- ---------------------- --------- ----------------------------------------------
+   (the last column is the marked one: write what changed in your habits, not just what broke)

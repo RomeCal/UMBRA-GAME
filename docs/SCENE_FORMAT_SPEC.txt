@@ -1,0 +1,77 @@
+=============================================================================
+ UMBRA SCENE FORMAT  (R1, deliverable D1)            file: Scenes/*.txt
+=============================================================================
+ A level is a plain text file. One command per line. Everything after '#' on a line is a comment.
+ Numbers are plain decimals (3, -2.5, 0.002). Words are separated by spaces. Order does not matter
+ EXCEPT that a material must be defined before it is useful to you (the loader checks all cross-references
+ at the end, so even that is only a convenience).
+ Run any file with:   umbra Scenes/yourfile.txt      (or edit Scenes/level1.txt and run again; no rebuild)
+
+ A BAD LINE NEVER CRASHES THE GAME. It prints
+     scene file 'Scenes/x.txt' line 14: expected a number for scale but found 'abc' (object shape ...)
+ skips that line, and carries on. The title screen then shows "SCENE PROBLEMS: n".
+
+ ---------------------------------------------------------------------------
+ LEVEL AND PLAYER
+   level_name <words>                      the name on the title screen
+   next_level <path>                       played after this one is won (omit on the last level)
+   hint <words>                            a tip shown at the bottom for 6 s each at the start (repeat the line for more)
+   bounds minX minZ maxX maxZ              the walkable rectangle; the player cannot leave it
+   player x z [yawDegrees]                 start position on the floor; yaw 0 = looking along +X, 90 = along +Z
+   goal x z radius                         reach within `radius` of (x,z) to win
+   health max drainPerSec regenPerSec      drain applies at 100% sunlit, regen at 100% shaded (blended in between)
+   stamina max drainPerSec regenPerSec     sprinting costs stamina; at 0 you are TIRED until 30% is back
+   speed walk sprintMultiplier             units per second
+   eye_height h      player_radius r       camera height; collision circle
+   par_time seconds                        finishing within this gives three stars (x1.6 gives two)
+   fog r g b density                       distance haze (density 0 = none)
+
+ THE SUN (one directional light with a shadow map)
+   sun dx dy dz  r g b  ambient diffuse    dy must be negative for a sun above the ground
+   sun_shadow halfSize near far resolution biasScale biasMin
+        the orthographic shadow box is  [-halfSize, +halfSize]^2 in light space, near..far deep.
+        resolution must be a power of two (<= 8192). The box MUST cover the whole level: see tools/check_levels.py.
+   sun_center x y z                        the middle of the box when it does not follow the player
+   sun_sweep amplitudeDeg periodSec        the sun swings +/- amplitude about the vertical axis (0 = still)
+   sun_follow on|off distanceAhead on|off  E1: box follows the player; third word = snap to whole texels
+   omni_bias worldUnits                    bias for the point-light cube shadows
+
+ OTHER LIGHTS
+   point x y z  r g b  amb diff  con lin exp  farPlane resolution      up to 3, each casts cube shadows
+   spot  x y z  dx dy dz  r g b  amb diff  con lin exp  edgeDeg [camera]     up to 3, no shadow; 'camera' = flashlight
+
+ ASSETS
+   skybox +X -X +Y -Y +Z -Z                six TGA paths in exactly that order (OpenGL cube-map face order)
+   texture <name> file <path.tga>          24/32-bit uncompressed TGA
+   texture <name> procedural <type> r g b r g b size    type: plain checker brick stripes noise stone grid
+   material <name> <texture> specularIntensity shininess [emissive r g b]
+   A missing file, an unreadable file, or an unknown name is REPORTED WITH ITS LINE NUMBER and replaced by a
+   magenta/black checker (textures) or a generated sky (skybox). It is never silently black.
+
+ OBJECTS  (the level geometry; the SAME list is drawn, shadowed and collided with)
+   object <shape> <material>  x y z  sx sy sz  [flags]
+        shape: box plane cylinder pyramid      all unit sized and centred on (x,y,z); scale = size in world units
+               (a box 3 4 3 is 3 wide, 4 tall, 3 deep; a plane lies flat; a cylinder's sx,sz are its diameter)
+        flags: solid       blocks the player
+               movable     solid AND the player pushes it by walking into it (it casts shade where you leave it)
+               nocast      casts no shadow (used for the glowing goal)
+               tile=N or tile=A,B     repeat the texture N times (or A across, B along)
+   Sit objects on the floor: y = sy/2.
+
+ A COMPLETE MINIMAL LEVEL (copy, save as Scenes/tiny.txt, run it)
+   level_name TINY
+   bounds -10 -10 10 10
+   player -8 0 0
+   goal 8 0 1.5
+   sun 0 -0.6 0.8  1 0.95 0.8  0.3 1
+   sun_shadow 16 0.1 100 1024 0.002 0.0005
+   texture t file Textures/sand.tga
+   material m t 0.1 8
+   object plane m 0 0 0 20 1 20 tile=5
+   object box m 0 2 -3 6 4 0.6 solid
+   object box m -4 1 3 2 2 2 movable
+ ---------------------------------------------------------------------------
+ CHECKS THE LOADER MAKES (each prints the line): number expected; missing value; resolution not a power of two;
+ near/far order; unknown shape/flag/command/texture type; scale not positive; edge angle range; a light count above 3;
+ attenuation all zero; start or goal inside a solid object; start outside bounds; no movable object (warning);
+ missing texture file; material using an unknown texture; object using an unknown material.

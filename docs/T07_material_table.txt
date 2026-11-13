@@ -1,0 +1,39 @@
+=============================================================================
+ T7 - MATERIAL TABLE                                                    (R3 owns)
+=============================================================================
+   NAME       TEXTURE       specularIntensity  shininess  USED ON (level x count)  EMISSIVE
+   ---------- ------------- ------------------ ---------- ------------------------ ----------
+   sand       sandTex       0.05               4          L1x1 L2x1            
+   brick      brickTex      0.20               16         L1x5 L2x5            
+   stone      stoneTex      0.45               48         L1x2 L2x2            
+   crate      crateTex      0.15               8          L1x2 L2x2 L3x2       
+   metal      metalTex      1.00               256        L1x2 L2x2 L3x2       
+   goal       goalTex       1.00               128        L1x2 L2x2 L3x2       emissive 0.10 0.30 0.70
+   sandstone  sandstoneTex  0.10               8          L3x5                 
+   obsidian   obsidianTex   0.90               128        L3x2                 
+   dune       duneTex       0.03               4          L3x1                 
+   ember      lavaTex       0.30               16         L3x2                 emissive 0.55 0.20 0.04
+
+   WHAT EACH IS MEANT TO LOOK LIKE (specular + shininess are what make them differ under the sun)
+     sand       dry rippled sand: almost no highlight (0.05 / 4), the matt reference.
+     brick      red brick with pale mortar: faint broad sheen (0.20 / 16).
+     stone      grey cracked stone: medium highlight (0.45 / 48).
+     crate      striped wood grain: matt (0.15 / 8); orange block on the minimap.
+     metal      grid-lined steel pyramids: a sharp bright glint (1.0 / 256) - the clearest specular test.
+     goal       flat bright blue with an emissive glow, so it is visible even in shade and fog.
+     sandstone  yellow-tan brick (level 3 walls), matt.
+     obsidian   near-black glassy pillars (level 3): tiny very sharp highlight (0.9 / 128).
+     dune       pale dune sand (level 3 floor), very matt.
+     ember      orange glowing braziers (level 3), emissive.
+   Screenshot with all five basics visible in ONE frame: use level 1 from (free camera, F2) near the pyramid, press
+   F12 or K -> screenshots/umbra_<time>.bmp.  Attach it here.  (R3 must take it; none is included.)
+
+   GEOMETRY: vertices / indices per shape  (B2: every shape is drawn with glDrawElements)
+     box       24 / 36    four vertices per face because each face needs its own normal AND texture coordinates
+                          (8 corners would force one normal per corner and smooth the box into a ball under light)
+     plane      4 /  6    one face, one normal: no splitting needed
+     cylinder 102 / 288   24 segments: side 25 x 2 = 50 (the +1 column closes the texture seam), two caps 26 each
+                          (a separate centre+ring so the cap normal is straight up/down, not the side normal)
+     pyramid   16 / 18    4 side faces x 3 (each with its own face normal) + 4 for the base
+     skybox     8 / 36    the ONLY shape that really uses 8 corners: skybox.frag uses the position as the direction
+                          and ignores normals completely.

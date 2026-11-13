@@ -1,0 +1,33 @@
+=============================================================================
+ S1 - HOW ONE FRAME IS DRAWN   (material for the author of S1; main.cpp has the same list at the top)
+=============================================================================
+ Startup (once): window (GL 4.6 -> 4.1 -> 3.3) -> GLEW -> compile 9 shader programs (see below) -> build meshes
+ -> LoadScene (text file) -> BuildLevel: textures, materials, lights, shadow maps, sky -> game on its title screen.
+
+ Per frame:
+  1  INPUT + LOGIC (CPU).   glfwPollEvents; proof keys; Game::Update: movement x deltaTime, circle-vs-box collision
+     against the scene's own solid objects, health/stamina, state machine. Health uses the sun fraction the probe
+     measured LAST frame.
+  2  SUN TRANSFORM (CPU). sun direction (swung by sun_sweep), box centre (fixed or following), optional texel snap,
+     lightTransform = ortho(-h,h,-h,h,near,far) x lookAt(centre - dir x far/2, centre, up).
+  3  SUN SHADOW PASS  - program directional_shadow_map (.vert + empty .frag). Target: sun shadow FBO, depth only,
+     2048x2048. Viewport = the map size. ONLY if dirty (a block moved, the sun swung, the box follows).
+  4  POINT-LIGHT SHADOW PASSES - program omni_shadow_map (.vert + .geom + .frag). Target: one cube-map FBO per light
+     (glFramebufferTexture attaches the whole cube). ONE draw pass per light; the geometry shader emits each triangle
+     six times with gl_Layer = 0..5; the fragment shader writes gl_FragDepth = distance / farPlane. ONLY if dirty.
+  5  MAIN PASS - program shader (.vert + .frag). Target: the window framebuffer. Clear, perspective projection rebuilt
+     from the CURRENT framebuffer size (so resizing never stretches), uniforms for lights/materials, shadow maps bound
+     on units 2 and 3-5, texture on unit 1. Every object: model, normalMatrix, uvScale, material, glDrawElements.
+     Fragment: Phong from sun + torches + spots, sun/torch shadows, texture, emissive, fog.
+  6  SKYBOX - program skybox. Depth func LEQUAL, depth writes off, view translation removed, gl_Position = p.xyww.
+     Cube map on unit 0.  Drawn LAST so the depth test discards every pixel the level already covers.
+  7  SUN PROBE - program sunprobe. Target: a 1x1 RGBA8 framebuffer. One point, glDrawElements. It samples the
+     sun shadow map (unit 2) at five points around the player's feet with the same bias and matrix as step 5 and writes
+     the lit fraction. glReadPixels goes into one of two PBOs; the other (filled last frame) is mapped and read.
+  8  HUD - program hud. Depth test off, blending on, glm::ortho(0,w,0,h,-1,1). All rectangles and text are
+     batched into one dynamic buffer and drawn with ONE glDrawElements. Texture on unit 1 (the glyph strip).
+  9  F12 screenshot (if asked), swap buffers, timing harness (300-frame averages; GPU time from a timer query where available).
+
+ Programs (6): shader, directional_shadow_map, omni_shadow_map, skybox, sunprobe, hud. Shaders/ holds 13 files:
+ shader.vert/.frag, directional_shadow_map.vert/.frag, omni_shadow_map.vert/.geom/.frag, skybox.vert/.frag,
+ sunprobe.vert/.frag, hud.vert/.frag.

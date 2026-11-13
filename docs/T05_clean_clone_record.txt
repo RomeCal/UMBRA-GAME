@@ -1,0 +1,25 @@
+=============================================================================
+ T5 - CLEAN CLONE RECORD                                                      (R1)
+=============================================================================
+ Do this twice: Gate 2, and before submission.  The person must NOT have built the project before.
+
+ WINDOWS (Visual Studio Community 2022):
+   1. vcpkg install glew:x64-windows glfw3:x64-windows glm:x64-windows      then   vcpkg integrate install
+   2. open UMBRA.sln, set the platform to x64, press F5.
+   (if your VS is 2019: Project > Properties > General > Platform Toolset = v142)
+ MAC:
+   1. brew install glew glfw glm
+   2. cd UMBRA_Mac && chmod +x build_and_run.sh && ./build_and_run.sh
+
+   ATTEMPT 1, GATE 2
+     Date:                    Done by:
+     Machine, and has it ever built this project before:
+     Clock time from clone to a running window:
+     What went wrong the first time:
+     What we changed in the repo so it will not happen again:
+
+   ATTEMPT 2, BEFORE SUBMISSION
+     Date:                    Done by:
+     Machine:
+     Clock time from clone to a running window:
+     What went wrong:

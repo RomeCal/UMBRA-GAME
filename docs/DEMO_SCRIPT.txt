@@ -1,0 +1,17 @@
+=============================================================================
+ DEMO SCRIPT (12 minutes).  Every member speaks about their own work.
+=============================================================================
+ MINUTES 1-5   An outsider plays level 1 cold. Say nothing. The title screen, the hint line at the bottom, the SUN/SHADE
+               indicator and the Tab map are all they get. Note where they hesitate (that is an R4 finding).
+ MINUTES 6-9   BREAK IT ON PURPOSE. Say what will happen BEFORE you press each key (that is what earns the 5 marks):
+   1  press 1  "bias too small": the floor stripes (acne). Stand still in the sun: the bar jitters.        [R2]
+   2  press 3  "bias too large": a lit strip appears beside every wall. Stand in it: you burn where it looks safe.   [R2]
+   3  press 2  back to correct.
+   4  press Z twice, walk to the edge: "OUTSIDE SHADOW BOX": burn in the shade beyond the box.              [R2, P2]
+   5  press X twice to restore. Press N then M: shadows shimmer when walking (snapping off); stable (on).     [R2, E1]
+   6  press 0: shadows off. The whole level is lethal: the shadows were the mechanic, not decoration.        [R4]
+   7  press G, then F1: show the frame time with and without the dirty flags.                                [R5]
+   8  press F2, C x6: show the six sky faces meeting without seams.                                          [R3]
+   9  edit Scenes/level1.txt live (sun colour, drain) and restart with R: the level really comes from the file. [R1]
+ MINUTES 10-12 Questions. Know your own file: R1 SceneLoader.cpp (what happens on a bad line: report() at SceneLoader.cpp:52, the per-line loop at :61, 'continue' after each report), R2 shader.frag
+               CalcDirectionalShadowFactor (line 45), R3 Skybox.cpp face table (line 71), R4 Game.cpp state machine, R5 main.cpp harness (line ~477).

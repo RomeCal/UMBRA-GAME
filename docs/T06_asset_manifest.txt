@@ -1,0 +1,27 @@
+=============================================================================
+ T6 - ASSET MANIFEST                                                  (R3 owns)
+=============================================================================
+   FILE                          BYTES     DIMENSIONS  SOURCE                                         LICENCE
+   ----------------------------- --------- ----------- ---------------------------------------------- --------------------
+   Textures/brick.tga              196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/crate.tga              196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/dune.tga               196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/goal.tga                12,306   64 x 64   tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/lava.tga                49,170  128 x 128  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/metal.tga              196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/obsidian.tga           196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sand.tga               196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sandstone.tga          196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sky_nx.tga             196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sky_ny.tga             196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sky_nz.tga             196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sky_px.tga             196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sky_py.tga             196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/sky_pz.tga             196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+   Textures/stone.tga              196,626  256 x 256  tools/make_assets.py, made by the group (R3: ______)   CC0 / made by us
+
+   Meshes: generated in Mesh.cpp (no files): box, plane, cylinder, pyramid.   Licence: made by the group.
+   Fonts/digits: HUD.cpp builds a 5x7 pixel glyph strip in code.   Sounds: none.
+   CC-BY ATTRIBUTIONS: none needed (no third-party assets).
+   The file sizes above are the REAL sizes in this folder (24-bit TGA = width*height*3 + 18 header bytes).
+   R3: replace the placeholder name with the member who ran the script, and re-run tools/make_assets.py if you change a colour.

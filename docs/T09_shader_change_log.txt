@@ -1,0 +1,33 @@
+=============================================================================
+ T9 - SHADER CHANGE LOG                                                    (R2 owns)
+=============================================================================
+ STARTING POINT, not the finished log. These ten entries record why each shader is the way it is in the delivered
+ build.  YOU (R2) must keep this going from now on: every change, with the date, a before/after screenshot, and the
+ WHY - including changes you revert.  Entries that "rename the change" lose marks.
+
+  #  DATE    FILE                          WHAT CHANGED / WAS CHOSEN                       WHY                                                SHOTS
+  -- ------- ----------------------------- ----------------------------------------------- -------------------------------------------------- -----
+  1  ______  Shaders/*.vert/.frag/.geom    every file starts "#version 460"; Shader.cpp    one place decides the version, so a 4.1/3.3 machine ____
+                                           rewrites line 1 to 410 core / 330 core          still gets ALL shaders on the same version (B1)
+  2  ______  shader.frag                   directional bias = max(scale*(1-N.L), min),     the slope term tracks tan(theta); see BIAS_         ____
+                                           scale/min are uniforms                          DERIVATION. Uniforms so keys 1/2/3 can break it
+  3  ______  shader.frag                   pcfRadius uniform (0/1/2) loops a (2r+1)^2      E2's picture with no extra pass; the game logic     ____
+                                           neighbourhood                                   stays at 0 (decision 7)
+  4  ______  shader.frag                   SampleOmni(i, d) is an if-chain on constant     indexing a samplerCube array with a runtime value   ____
+                                           indices                                         is not allowed on every 3.3/4.1 driver
+  5  ______  omni_shadow_map.geom/.frag    one pass, geometry shader loops 6 faces with    one DRAW pass per light but 6x the rasterised       ____
+                                           gl_Layer; fragment writes dist/farPlane         triangles; linear distance makes the bias world units
+  6  ______  shader.vert                   normalMatrix uniform computed on the CPU        inverse() per vertex was wasted work                ____
+  7  ______  skybox.vert                   gl_Position = p.xyww                            depth is exactly 1.0, so the sky never covers the   ____
+                                                                                           level even though it is a 2-unit cube
+  8  ______  skybox.frag                   sun disc computed from the sunDir uniform,      a disc baked into the cube map would not follow     ____
+                                           not baked into the faces                        the swinging sun of level 2
+  9  ______  sunprobe.frag                 5 samples (centre + 4 at 0.75 x radius), same   the mechanic must read the SAME shadow map with     ____
+                                           bias formula, same matrix                       the SAME rules or bias bugs would not reach the game
+ 10  ______  shader.frag / sunprobe.frag   shadowsEnabled uniform (key 0)                   the demo 'break it': with shadows off nothing blocks ____
+                                                                                           the sun and the level becomes unwinnable
+ 11  ______  shader.frag                   fogColour/fogDensity, capped at 85%             distance haze for atmosphere; cap keeps the goal    ____
+                                                                                           beacon visible
+ 12  ______  hud.frag                      alpha = vertex alpha x glyph-strip alpha        one shader for rectangles (solid glyph) and text     ____
+
+  YOUR OWN ENTRIES FROM HERE (date, file, what, WHY, screenshots - and write the reverted ones too):

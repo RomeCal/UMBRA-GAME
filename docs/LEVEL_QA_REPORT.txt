@@ -1,0 +1,27 @@
+
+=== FIRST LIGHT  (Scenes/level1.txt) 
+  health (100.0, 30.0, 12.0)  speed (4.5, 1.7)  sweep amp 0.0 per 40.0  start (-20.0, -10.0) goal (19.0, 12.0, 1.6)
+  start lit fraction 0.0 (want 0), goal lit fraction 0.0 (want 0)
+  RISKY (shortest)  length  47.3  walking     : SURVIVES time  10.6s  lowest health  22.7  seconds in sun  3.0
+  RISKY (shortest)  length  47.3  sprint in sun: SURVIVES time   9.3s  lowest health  57.6  seconds in sun  1.8
+  SAFE (avoid sun)  length  61.1  walking     : SURVIVES time  13.6s  lowest health  86.3  seconds in sun  0.5
+  SAFE (avoid sun)  length  61.1  sprint in sun: SURVIVES time  13.4s  lowest health  91.8  seconds in sun  0.3
+  shadow box: half-size 24.0 covers a worst-case light-space reach of 22.0 -> OK
+
+=== SWINGING SUN  (Scenes/level2.txt) 
+  health (100.0, 34.0, 12.0)  speed (4.5, 1.7)  sweep amp 12.0 per 40.0  start (20.0, -10.0) goal (-19.0, 12.0, 1.6)
+  start lit fraction 0.0 (want 0), goal lit fraction 0.0 (want 0)
+  RISKY (shortest)  length  47.3  walking     : SURVIVES time  10.6s  lowest health   3.2  seconds in sun  3.2
+  RISKY (shortest)  length  47.3  sprint in sun: SURVIVES time   9.2s  lowest health  45.1  seconds in sun  1.9
+  SAFE (avoid sun)  length  61.1  walking     : SURVIVES time  13.6s  lowest health  79.9  seconds in sun  0.6
+  SAFE (avoid sun)  length  61.1  sprint in sun: SURVIVES time  13.3s  lowest health  87.5  seconds in sun  0.4
+  shadow box: half-size 27.0 covers a worst-case light-space reach of 24.5 -> OK
+
+=== THE LONG NOON  (Scenes/level3.txt) 
+  health (100.0, 40.0, 12.0)  speed (4.5, 1.7)  sweep amp 8.0 per 36.0  start (-24.0, -12.0) goal (24.0, 12.0, 1.6)
+  start lit fraction 0.0 (want 0), goal lit fraction 0.0 (want 0)
+  RISKY (shortest)  length  56.6  walking     : DIES     time   4.4s  lowest health   0.0  seconds in sun  2.5
+  RISKY (shortest)  length  56.6  sprint in sun: DIES     time   4.4s  lowest health   0.0  seconds in sun  2.5
+  SAFE (avoid sun)  length  80.2  walking     : SURVIVES time  17.9s  lowest health  70.4  seconds in sun  1.6
+  SAFE (avoid sun)  length  80.2  sprint in sun: SURVIVES time  17.2s  lowest health  84.1  seconds in sun  1.1
+  shadow box: half-size 32.0 covers a worst-case light-space reach of 29.4 -> OK
